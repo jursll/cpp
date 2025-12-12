@@ -14,22 +14,24 @@
 
 int main()
 {
-	PhoneBook	pb;
-	std::string	str;
+	PhoneBook phoneBook;
+	std::string input;
 
-	while (str != "EXIT")
+	while (true)
 	{
-		std::cout << "> Enter command (ADD, SEARCH, EXIT): ";
-		std::getline(std::cin,str);
-		if (str == "ADD")
-			pb.add();
-		else if (str == "SEARCH")
-			pb.search();
-		if (std::cin.eof())
+		std::cout << "Enter command (ADD, SEARCH, EXIT): ";
+		if (!std::getline(std::cin, input))
 		{
-			std::cout << std::endl;
-			return 0;
+			std::cout << "\nEOF detected. Exiting.\n";
+			break;
 		}
+
+		if (input == "ADD" || input == "Add" || input == "add")
+			phoneBook.addContact();
+		else if (input == "SEARCH" || input == "Search" || input == "search")
+			phoneBook.searchContacts();
+		else if (input == "EXIT" || input == "Exit" || input == "exit")
+			break;
 	}
 	return 0;
 }

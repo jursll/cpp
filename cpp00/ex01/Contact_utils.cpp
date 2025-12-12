@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Contact.hpp                                        :+:      :+:    :+:   */
+/*   Contact_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: julrusse <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,30 +10,43 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CONTACT_HPP
-#define CONTACT_HPP
+#include "Contact.hpp"
 
-#include <iostream>
-#include <string>
-#include <iomanip>
+std::string Contact::getNonEmptyStr(const std::string& prompt)
+{
+	std::string input;
 
-class Contact {
-	private:
-		std::string _FirstName;
-		std::string _LastName;
-		std::string _Nickname;
-		std::string _PhoneNumber;
-		std::string _DarkestSecret;
+	while (true)
+	{
+		std::cout << prompt ;
+		std::getline(std::cin, input);
 
-		std::string getNonEmptyStr(const std::string& prompt);
-		std::string getValidPhoneNumber();
+		if (!input.empty())
+			return input;
 
-	public:
-		Contact();
-		~Contact();
-		void setContact();
-		void displaySummary(int index) const;
-		void displayFull() const;
-};
+		std::cout << "Input can't be empty. Try again.\n";
+	}
+}
 
-#endif
+std::string Contact::getValidPhoneNumber()
+{
+	std::string input;
+
+	while (true)
+	{
+		input = getNonEmptyStr("Phone number: ");
+
+		bool valid = true;
+		for (size_t i = 0; i < input.length(); i++)
+		{
+			if (!std::isdigit(input[i]))
+			{
+				valid = false;
+				break;
+			}
+		}
+		if (valid)
+			return input;
+		std::cout << "Phone number must contain only digits. Try again.\n";
+	}
+}

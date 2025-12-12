@@ -14,19 +14,18 @@
 #define PHONEBOOK_HPP
 
 #include "Contact.hpp"
+#include <sstream>
 
 class PhoneBook {
 	private:
 		Contact _Contacts[8];
-		int _Index;
+		int _Count;
 
 	public:
 		PhoneBook();
 		~PhoneBook();
-		void add(void);
-		void search();
-		void print(Contact contact);
-		Contact getcontact(int index);
+		void addContact();
+		void searchContacts() const;
 };
 
 #endif

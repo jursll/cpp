@@ -15,10 +15,10 @@ NAME = phonebook
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS = phonebook.cpp
+SRCS = Contact.cpp Contact_utils.cpp PhoneBook.cpp main.cpp
 OBJS = $(SRCS:.cpp=.o)
 
-all = $(NAME)
+all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
