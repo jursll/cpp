@@ -1,7 +1,7 @@
 NAME = harl
 
 OBJ_DIR = objs/
-SRCS = main.cpp Harl.cpp HumanA.cpp HumanB.cpp
+SRCS = main.cpp Harl.cpp
 OBJ := $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJ_DIR), $(OBJ))
 
