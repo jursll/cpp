@@ -11,7 +11,7 @@ class Fixed {
 	public:
 		Fixed(); //Default Constructor
 		Fixed(const Fixed &f); //Copy Constructor
-		Fixed& operator=(const Fixed &f); //Copy assignment operator
+		Fixed& operator=(const Fixed &f); //Copy assignment operator overload
 		~Fixed(); //Destructor
 
 		int getRawBits() const;

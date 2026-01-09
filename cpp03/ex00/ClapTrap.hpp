@@ -20,6 +20,7 @@ class ClapTrap {
 		void	attack(const std::string& target);
 		void	takeDamage(unsigned int amount);
 		void	beRepaired(unsigned int amount);
+		void	playerStatus();
 
 		std::string	getName();
 		int	getDamage();
