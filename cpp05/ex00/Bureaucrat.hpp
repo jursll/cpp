@@ -21,6 +21,6 @@ class Bureaucrat {
 		std::string getGrate() const;
 		int incrementGrade(int grade);
 		int decrementGrade(int grade);
-}
+};
 
 #endif
