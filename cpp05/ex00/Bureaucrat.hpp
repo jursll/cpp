@@ -11,16 +11,31 @@ class Bureaucrat {
 
 	public:
 		Bureaucrat();
+		Bureaucrat(std::string const& name, int grade);
 		Bureaucrat(Bureaucrat const &src);
 		Bureaucrat& operator=(Bureaucrat const &src);
 		~Bureaucrat();
 
-		void GradeTooHighException() const;
-		void GradeTooLowException() const;
-		std::string getName() const;
-		std::string getGrate() const;
-		int incrementGrade(int grade);
-		int decrementGrade(int grade);
+		const std::string getName() const;
+		int getGrade() const;
+		void incrementGrade();
+		void decrementGrade();
+
+		class GradeTooHighException : public std::exception {
+			public:
+				virtual const char* what() const throw() {
+					return ("Grade is too high");
+				}
+		};
+
+		class GradeTooLowException : public std::exception {
+			public:
+				virtual const char* what() const throw() {
+					return ("Grade is too low");
+				}
+		};
 };
+
+std::ostream& operator<<(std::ostream& ostr, Bureaucrat const& src);
 
 #endif
