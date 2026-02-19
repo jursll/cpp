@@ -44,4 +44,6 @@ const int Form::getEGrade() const {
 	return this->_sgrade;
 }
 
-// TO CONTINUE : void beSigned(Bureaucrat &src);
+void Form::beSigned(Bureaucrat &src) {
+	//TODO
+}

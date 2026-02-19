@@ -1,9 +1,11 @@
-#ifndef FORM_H
-#define FORM_H
+#ifndef FORM_HPP
+#define FORM_HPP
 
 #include <iostream>
 #include <string>
 #include "Bureaucrat.hpp"
+
+class Bureaucrat;
 
 class Form {
 	private:
@@ -25,7 +27,6 @@ class Form {
 		const int getEGrade() const;
 
 		void beSigned(Bureaucrat &src);
-		void signForm(Form& form);
 
 		class GradeTooHighException : public std::exception {
 			public:
@@ -40,6 +41,8 @@ class Form {
 					return ("Grade is too low");
 				}
 		};
+
+		
 };
 
 std::ostream& operator<<(std::ostream& ostr, Form const& src);
