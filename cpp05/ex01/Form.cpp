@@ -36,14 +36,27 @@ bool Form::getSigned() const {
 	return this->_signed;
 }
 
-const int Form::getSGrade() const {
+int Form::getSGrade() const {
 	return this->_sgrade;
 }
 
-const int Form::getEGrade() const {
-	return this->_sgrade;
+int Form::getEGrade() const {
+	return this->_egrade;
 }
 
 void Form::beSigned(Bureaucrat &src) {
-	//TODO
+	if (src.getGrade() <= this->_sgrade && this->getSigned() == 0)
+		this->_signed = true;
+	else if (src.getGrade() <= this->_sgrade && this->getSigned() == 1)
+		throw(Form::FormAlreadySignedException());
+	else
+		throw (Form::GradeTooLowException());
+}
+
+std::ostream & operator<<(std::ostream & ostr, Form const & src) {
+	ostr << "Form name: " << src.getName() << std::endl;
+	ostr << "Signed (1 = true, 0 = false): " << src.getSigned() << std::endl;
+	ostr << "Grade to signe must be > " << src.getSGrade() << std::endl;
+	ostr << "Grade to execute must be > " << src.getEGrade() << std::endl;
+	return (ostr);
 }

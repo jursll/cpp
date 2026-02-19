@@ -23,8 +23,8 @@ class Form {
 
 		const std::string getName() const;
 		bool getSigned() const;
-		const int getSGrade()const;
-		const int getEGrade() const;
+		int getSGrade()const;
+		int getEGrade() const;
 
 		void beSigned(Bureaucrat &src);
 
@@ -42,7 +42,12 @@ class Form {
 				}
 		};
 
-		
+		class FormAlreadySignedException : public std::exception {
+			public:
+				virtual const char* what() const throw() {
+					return ("form is already signed");
+				}
+		};
 };
 
 std::ostream& operator<<(std::ostream& ostr, Form const& src);
