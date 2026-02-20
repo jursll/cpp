@@ -53,6 +53,11 @@ void AForm::beSigned(Bureaucrat &src) {
 		throw (AForm::GradeTooLowException());
 }
 
+void AForm::setSigned(bool sign) {
+	this->_signed = sign;
+	return ;
+}
+
 std::ostream & operator<<(std::ostream & ostr, AForm const & src) {
 	ostr << "Form name: " << src.getName() << std::endl;
 	ostr << "Signed (1 = true, 0 = false): " << src.getSigned() << std::endl;
