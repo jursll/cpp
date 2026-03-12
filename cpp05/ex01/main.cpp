@@ -35,7 +35,7 @@ int main()
 	{
 		std::cout << "\033[91m\n---- Form invalid (grade to sign too high) ----\033[0m" << std::endl;
 		try {
-			Form f;
+			Form f("Form", 0, 150);
 			std::cout << f << std::endl;
 		}
 		catch(const std::exception& e) {
