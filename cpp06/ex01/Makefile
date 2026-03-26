@@ -1,4 +1,4 @@
-NAME = convert
+NAME = serialize
 
 OBJ_DIR = objs/
 SRCS = $(wildcard *.cpp)

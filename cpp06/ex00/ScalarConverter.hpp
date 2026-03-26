@@ -4,11 +4,12 @@
 # include <iostream>
 # include <string>
 # include <cstring>
-# include <limits.h>
-# include <cfloat>
+# include <climits>
 # include <cmath>
 # include <ostream>
 # include <stdlib.h>
+# include <iomanip>
+# include <cerrno>
 
 class ScalarConverter {
 	public:
@@ -23,13 +24,13 @@ class ScalarConverter {
 		static std::string getType(std::string string);
 
 		static int isInt(std::string string);
-		static int isFloat(std::string string);
 		static int isChar(std::string string);
+		static int isFloat(std::string string);
 		static int isDouble(std::string string);
 
 		static void printInt(std::string string, std::string type);
-		static void printFloat(std::string string, std::string type);
 		static void printChar(std::string string, std::string type);
+		static void printFloat(std::string string, std::string type);
 		static void printDouble(std::string string, std::string type);
 
 		static void checkChar(int i, char c);
