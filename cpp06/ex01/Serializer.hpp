@@ -1,21 +1,23 @@
 #ifndef SERIALIZER_HPP
-#define SERIALIZER_HPP
+# define SERIALIZER_HPP
 
-#include <iostream>
+#include "Serializer.hpp"
 #include <stdint.h>
-#include <string>
+#include <iostream>
 #include "Data.hpp"
 
-class Serializer {
-	public:
-		static uintptr_t serialize(Data* ptr);
-		static Data* deserialize(uintptr_t raw);
+class Serializer
+{
 
 	private:
 		Serializer();
-		Serializer(Serializer const &src);
-		Serializer& operator=(Serializer const &src);
+		Serializer(const Serializer& oth);
+		Serializer& operator=(const Serializer& oth);
 		~Serializer();
-};
+	public:
+	static	uintptr_t	serialize(Data* ptr);
+	static	Data*		deserialize(uintptr_t raw);
 
+
+};
 #endif

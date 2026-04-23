@@ -1,0 +1,84 @@
+uintptr_t est un type entier garanti capable de contenir une adresse de pointeur sans perte d’information.
+
+En essence, il représente une adresse mémoire sous forme de nombre. Plus précisément, std::uintptr_t est conçu pour stocker toute la plage d’adresses de n’importe quel objet en C++, garantissant portabilité et précision.
+
+Pourquoi avons-nous besoin de uintptr_t
+
+Un pointeur est simplement une adresse en mémoire.
+
+On utilise uintptr_t pour indiquer qu’un pointeur peut être converti en une valeur numérique, puis reconverti en pointeur en utilisant reinterpret_cast.
+
+Donc :
+
+pointeur → nombre → pointeur
+
+On ne modifie pas l’objet, seulement la manière dont on regarde son adresse.
+
+Le problème que ça résout
+
+Il existe de nombreuses situations où un pointeur n’est pas accepté :
+
+API accepte uniquement des nombres
+le type de l’objet est inconnu
+seul void* ou un entier est autorisé
+il faut stocker temporairement une adresse
+il faut transmettre une adresse entre systèmes qui ne connaissent pas la classe
+
+Donc :
+
+l’API attend un nombre
+toi tu as une adresse
+
+uintptr_t devient une forme neutre de l’adresse.
+
+On convertit le pointeur en uintptr_t non pas pour changer sa valeur, mais pour le détacher de son type et le traiter comme une valeur neutre pouvant être stockée, transmise ou interprétée par des systèmes qui ne connaissent pas le type de l’objet.
+
+serialize & deserialize
+
+serialize = réinterpréter l’adresse du pointeur en nombre.
+
+deserialize = reconvertir ce nombre en pointeur.
+
+Exemple logique :
+
+Data* ptr → uintptr_t raw → Data* ptr
+
+L’objet en mémoire ne change pas. On ne fait que stocker et restaurer son adresse.
+
+Cela se fait avec :
+
+reinterpret_cast
+
+Car on ne fait pas une conversion logique de type, mais une réinterprétation des bits de l’adresse.
+
+Pourquoi utiliser reinterpret_cast
+
+reinterpret_cast est utilisé lorsqu’on veut traiter une adresse comme un autre type sans modifier sa valeur en mémoire.
+
+On ne convertit pas l’objet, on change seulement la manière dont on lit l’adresse.
+
+Fonctions static
+
+Les fonctions serialize et deserialize sont static.
+
+Cela signifie :
+
+elles n’appartiennent pas à une instance, mais à la classe
+elles n’ont pas de this
+elles n’ont pas accès aux membres non statiques
+elles peuvent être appelées sans créer d’objet
+
+Elles sont utilisées comme fonctions utilitaires.
+
+Idée principale
+
+Un pointeur est une adresse.
+uintptr_t est la manière standard de stocker cette adresse sous forme de nombre sans perte d’information.
+
+On ne sérialise pas les données de l’objet.
+On sérialise uniquement son adresse.
+
+serialize = stocker l’adresse comme un nombre
+deserialize = reconvertir le nombre en adresse
+
+L’objet reste exactement le même en mémoire tout au long du processus.

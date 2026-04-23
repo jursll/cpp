@@ -1,40 +1,30 @@
-#ifndef SCALARCONVERTER_H
-#define SCALARCONVERTER_H
+#ifndef SCALARCONVERTER_HPP
+#define SCALARCONVERTER_HPP
 
-# include <iostream>
-# include <string>
-# include <cstring>
-# include <climits>
-# include <cmath>
-# include <ostream>
-# include <stdlib.h>
-# include <iomanip>
-# include <cerrno>
+#include <iostream>
+#include <string>
+#include <ctype.h>
+#include <limits.h>
+#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <iomanip>
 
-class ScalarConverter {
-	public:
-		static void convert(std::string string);
-
+class ScalarConverter
+{
 	private:
 		ScalarConverter();
-		ScalarConverter(ScalarConverter const &src);
-		ScalarConverter& operator=(ScalarConverter const &src);
 		~ScalarConverter();
+		ScalarConverter(ScalarConverter const &oth);
+		ScalarConverter &operator=(ScalarConverter const &oth);
 
-		static std::string getType(std::string string);
+		static bool isInt(const std::string& literal);
+		static bool isDouble(const std::string& literal);
+		static bool isFloat(const std::string& literal);
 
-		static int isInt(std::string string);
-		static int isChar(std::string string);
-		static int isFloat(std::string string);
-		static int isDouble(std::string string);
-
-		static void printInt(std::string string, std::string type);
-		static void printChar(std::string string, std::string type);
-		static void printFloat(std::string string, std::string type);
-		static void printDouble(std::string string, std::string type);
-
-		static void checkChar(int i, char c);
-		static void checkInt(int i);
+	public:
+		static void convert(const std::string &string);
 };
 
 #endif

@@ -1,0 +1,120 @@
+dynamic_cast est utilisé pour identifier le type réel (dynamique) d’un objet à l’exécution lorsqu’il est accédé via un pointeur ou une référence de classe de base.
+
+dynamic_cast permet de déterminer le type réel d’un objet à runtime lorsqu’il est manipulé à travers un pointeur ou une référence vers une classe de base.
+
+Il effectue un cast sécurisé (safe cast), contrairement à static_cast, car il vérifie si l’objet est réellement de ce type.
+
+Quand dynamic_cast fonctionne
+
+dynamic_cast fonctionne uniquement dans des hiérarchies polymorphiques.
+
+Une classe est polymorphique uniquement si elle possède au moins une fonction virtuelle.
+Même un simple destructeur virtuel suffit :
+
+virtual ~Base();
+
+Pourquoi ?
+Parce qu’une fonction virtuelle crée une vtable et active le RTTI (Run Time Type Information). Sans cela, dynamic_cast ne fonctionne pas.
+
+RTTI
+
+dynamic_cast utilise le RTTI (Run Time Type Information).
+
+Tu ne vois pas le throw, car il se produit dans le runtime de C++.
+L’exception est lancée par le système d’exécution de C++, pas par ton code.
+
+Comportement de dynamic_cast
+
+Quand on utilise un pointeur :
+
+dynamic_cast<Type*>(pointer)
+
+Si le cast échoue, il retourne nullptr. Aucune exception n’est lancée.
+Le pointeur peut être invalide sans casser le programme.
+
+Quand on utilise une référence :
+
+dynamic_cast<Type&>(reference)
+
+Si le cast échoue, une exception std::bad_cast est lancée.
+Cela arrive parce qu’une référence ne peut pas être nulle.
+
+Donc :
+
+pointeur → retourne nullptr
+référence → lance une exception
+
+Pourquoi avec Base* p rien n’est lancé
+
+Quand on a :
+
+Base* p;
+dynamic_cast<Derived*>(p);
+
+Aucune exception n’est lancée car un pointeur peut être nullptr.
+C++ choisit donc de retourner nullptr plutôt que de lancer une exception.
+
+catch(...)
+
+catch(...) signifie : intercepter n’importe quelle exception, quel que soit son type.
+
+En C++, n’importe quoi peut être lancé avec throw. Ce n’est pas comme en Java où seules des exceptions spécifiques sont utilisées.
+
+Exemples :
+
+throw 5;
+throw 3.14;
+throw 'a';
+throw "erreur";
+throw std::string("oops");
+throw std::runtime_error("boom");
+throw MyClass();
+
+Le type de l’exception correspond au type de l’objet lancé.
+
+dynamic_cast avec référence
+
+dynamic_cast avec une référence ne lance qu’un seul type d’exception :
+
+std::bad_cast
+
+Mais dans CPP06 on n’utilise pas <typeinfo>, donc on ne capture pas directement std::bad_cast.
+C’est pourquoi on utilise :
+
+catch(...)
+
+Pointeur vs Référence dans main
+
+Dans main, on a :
+
+Base* ptr = generate();
+
+identify(ptr);
+identify(*ptr);
+
+ptr est une adresse (pointeur).
+*ptr est l’objet à cette adresse.
+
+L’opérateur * s’appelle l’opérateur de déréférencement. Il donne l’objet lui-même, pas l’adresse.
+
+Donc :
+
+ptr → où se trouve l’objet
+*ptr → l’objet lui-même
+
+Quand on passe un objet existant sans copie à une fonction, C++ le traite comme une référence.
+Ainsi, *ptr devient Base&.
+
+Quand utiliser dynamic_cast
+
+On l’utilise lorsqu’on a une hiérarchie polymorphique et qu’on ne connaît pas le type concret de l’objet à l’exécution.
+Il sert généralement à identifier ou à effectuer une conversion sécurisée.
+
+Cependant, dans un bon design orienté objet, on l’évite souvent et on privilégie le polymorphisme (fonctions virtuelles) pour gérer le comportement.
+
+Peut-on identifier le type sans dynamic_cast ?
+
+Non.
+Sans dynamic_cast ou typeid, il n’existe pas de moyen sûr d’identifier le type réel d’un objet via Base* ou Base&.
+
+Les alternatives comme une variable de type ou des méthodes virtuelles modifieraient le design et iraient à l’encontre de l’objectif de l’exercice, qui est d’utiliser le RTTI.

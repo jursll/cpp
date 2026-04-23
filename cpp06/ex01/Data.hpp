@@ -1,10 +1,12 @@
 #ifndef DATA_HPP
-#define DATA_HPP
+# define DATA_HPP
 
-struct Data {
-	std::string name;
+#include <string>
+
+struct Data
+{
 	int age;
-	bool hungry;
+	std::string name;
+	std::string last_name;
 };
-
 #endif

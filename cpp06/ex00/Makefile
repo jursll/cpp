@@ -1,29 +1,31 @@
 NAME = convert
+SRCS = ScalarConverter.cpp main.cpp helpers.cpp
 
-OBJ_DIR = objs/
-SRCS = $(wildcard *.cpp)
-OBJ := $(SRCS:.cpp=.o)
-OBJS = $(addprefix $(OBJ_DIR), $(OBJ))
-
-CXX = c++
+CC = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+
+OBJDIR = obj
+OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
+
+RM = rm -rf
 
 all: $(NAME)
 
-$(NAME): $(OBJ_DIR) $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
-$(OBJ_DIR)%.o: %.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
+$(OBJDIR)/%.o: %.cpp | $(OBJDIR)
+	$(CC) $(CXXFLAGS) -c $< -o $@
+
+$(NAME): $(OBJS)
+	$(CC) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
 clean:
-	rm -f $(OBJS)
-	rm -rf $(OBJ_DIR)
+	$(RM) $(OBJDIR)
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
 
-$(OBJ_DIR):
-	@mkdir $(OBJ_DIR)
+.PHONY: all clean fclean re

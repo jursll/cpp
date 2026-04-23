@@ -1,10 +1,13 @@
 #include "ScalarConverter.hpp"
 
-int main(int ac, char** av) {
-	if (ac == 2) {
-		std::string arg = av[1];
-		ScalarConverter::convert (arg);
+int main(int ac, char **av)
+{
+	if (ac != 2)
+	{
+		std::cout << "Usage: ./convert <literal>" << std::endl;
+		return 1;
 	}
-	else
-		std::cerr << "args only needed : ./convert and a char, float, int or double" << std::endl;
+
+	ScalarConverter::convert(av[1]);
+	return 0;
 }
