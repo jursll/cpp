@@ -16,10 +16,10 @@ int main() {
 
 	std::cout << "Searching for " << OK_to_find << " and " << KO_to_find << "\n" << std::endl;
 	try {
-		std::cout << "\033[32m~ Correct search :\033[0m" << std::endl;
+		std::cout << "\033[32mCorrect search:\033[0m" << std::endl;
 		easyfind(cont, OK_to_find);
 		std::cout << std::endl;
-		std::cout << "\033[31m~ Wrong search :\033[0m" << std::endl;
+		std::cout << "\033[31mWrong search:\033[0m" << std::endl;
 		easyfind(cont, KO_to_find);
 	}
 	catch (std::exception &e) {
