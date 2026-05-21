@@ -63,42 +63,20 @@ int main() {
 	}
 	std::cout << "\n-----------------\n" << std::endl;
 {
-	std::cout << "\033[32mUsing addRange template:\033[0m" << std::endl;
+	std::cout << "\033[32mUsing addRange function:\033[0m" << std::endl;
 	try
 	{
-		std::cout << "--- From a vector: " << std::endl;
 		std::vector<int> vec;
+		vec.reserve(5);
 		for (int i = 0; i < 5; i++)
 			vec.push_back(i);
 
 		Span sp = Span(5);
 		sp.addRange(vec.begin(), vec.end());
+		for (int i = 0; i < 5; i++)
+			std::cout << i << std::endl;
 		std::cout << "Shortest span: " << sp.shortestSpan() << std::endl;
 		std::cout << "Longest span: " << sp.longestSpan() << std::endl;
-	}
-	catch (std::exception &e) { std::cout << e.what() << std::endl; }
-
-	try
-	{
-		std::cout << "--- From a classic array: " << std::endl;
-		int arr[] = {10, 3, 7, 1, 9};
-
-		Span sp = Span(5);
-		sp.addRange(arr, arr + 5);
-		std::cout << "Shortest span: " << sp.shortestSpan() << std::endl;
-		std::cout << "Longest span: " << sp.longestSpan() << std::endl;
-	}
-	catch (std::exception &e) { std::cout << e.what() << std::endl; }
-
-	try
-	{
-		std::cout << "--- Too many elements: " << std::endl;
-		std::vector<int> vec;
-		for (int i = 0; i < 10; i++)
-			vec.push_back(i);
-
-		Span sp = Span(5);
-		sp.addRange(vec.begin(), vec.end());
 	}
 	catch (std::exception &e) { std::cout << e.what() << std::endl; }
 }

@@ -16,12 +16,7 @@ class Span {
 		int shortestSpan();
 		int longestSpan();
 
-		template<typename Iterator>
-		void addRange(Iterator begin, Iterator end) {
-			if (static_cast<unsigned int>(std::distance(begin, end)) > (this->_size - this->_container.size()))
-				throw TooManyNumbersException();
-			this->_container.insert(_container.end(), begin, end);
-		}
+		void addRange(std::vector<int>::iterator begin, std::vector<int>::iterator end);
 
 	private:
 		unsigned int		_size;
