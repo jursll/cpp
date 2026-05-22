@@ -62,22 +62,23 @@ int main() {
 		}
 	}
 	std::cout << "\n-----------------\n" << std::endl;
-{
-	std::cout << "\033[32mUsing addRange function:\033[0m" << std::endl;
-	try
 	{
-		std::vector<int> vec;
-		vec.reserve(5);
-		for (int i = 0; i < 5; i++)
-			vec.push_back(i);
+		std::cout << "\033[32mUsing addRange function:\033[0m" << std::endl;
+		try {
+			std::vector<int> vec;
+			vec.reserve(5);
+			for (int i = 0; i < 5; i++)
+				vec.push_back(i);
 
-		Span sp = Span(5);
-		sp.addRange(vec.begin(), vec.end());
-		for (int i = 0; i < 5; i++)
-			std::cout << i << std::endl;
-		std::cout << "Shortest span: " << sp.shortestSpan() << std::endl;
-		std::cout << "Longest span: " << sp.longestSpan() << std::endl;
+			Span sp = Span(5);
+			sp.addRange(vec.begin(), vec.end());
+			for (int i = 0; i < 5; i++)
+				std::cout << i << std::endl;
+			std::cout << "Shortest span: " << sp.shortestSpan() << std::endl;
+			std::cout << "Longest span: " << sp.longestSpan() << std::endl;
+		}
+		catch (std::exception &e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
-	catch (std::exception &e) { std::cout << e.what() << std::endl; }
-}
 }
