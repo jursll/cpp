@@ -50,6 +50,4 @@ int main()
 			++it;
 		}
 	}
-		std::cout << "\n";
-
 }
