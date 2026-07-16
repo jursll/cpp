@@ -1,243 +1,139 @@
 #include "PmergeMe.hpp"
-#include <algorithm>
-#include <map>
 
-PmergeMe::PmergeMe() {}
 
-PmergeMe::PmergeMe(const PmergeMe &other)
-{
-	(void)other;
+/* ---- CONSTRUCTORS & DESTRUCTORS ------ */
+
+
+PmergeMe::PmergeMe(void) {
+	std::cout << "\033[90mConstructor for PmergeMe\033[0m" << std::endl;
 }
 
-PmergeMe &PmergeMe::operator=(const PmergeMe &other)
+PmergeMe::PmergeMe(int argc, char **argv)
 {
-	(void)other;
+	std::cout << "\033[90mConstructor for PmergeMe\033[0m" << std::endl;
+
+	std::deque<int> inputDeque;
+	std::list<int> inputList;
+
+	srand(time(NULL));
+	for (int i = 1; i < argc; ++i)
+	{
+		int value = atoi(argv[i]);
+		if (value <= 0)
+		{
+			std::cerr << "\033[1;31mError: Only positive integers are allowed.\033[0m" << std::endl;
+			exit(1);
+		}
+		inputDeque.push_back(value);
+		inputList.push_back(value);
+	}
+	std::cout << "Before: ";
+	display(inputDeque);
+
+	clock_t start1 = clock();
+	mergeInsertSortDeque(inputDeque);
+	clock_t end1 = clock();
+	double time1 = static_cast<double>(end1 - start1) / CLOCKS_PER_SEC * 1000;
+
+	clock_t start2 = clock();
+	mergeInsertSortList(inputList);
+	clock_t end2 = clock();
+	double time2 = static_cast<double>(end2 - start2) / CLOCKS_PER_SEC * 1000;
+
+	std::cout << "After: ";
+	display(inputDeque);
+	std::cout << "Time to process a range of " << inputDeque.size() << " elements with std::deque container: " << time1 << " us" << std::endl;
+	std::cout << "Time to process a range of " << inputList.size() << " elements with std::list container: " << time2 << " us" << std::endl;
+	if (inputDeque == std::deque<int>(inputList.begin(), inputList.end()))
+		std::cout << "The sorted sequences are equal." << std::endl;
+	else
+		std::cout << "The sorted sequences are not equal." << std::endl;
+}
+
+PmergeMe::PmergeMe(PmergeMe const &src) {
+	(void) src;
+	std::cout << "\033[90mCopy constructor for PmergeMe\033[0m" << std::endl;
+}
+
+PmergeMe &PmergeMe::operator=(PmergeMe const &src) {
+	(void) src;
+	std::cout << "\033[90mAssignment operator for PmergeMe\033[0m" << std::endl;
 	return *this;
 }
 
-PmergeMe::~PmergeMe() {}
-
-std::vector<size_t> PmergeMe::jacobsthalSequence(size_t upTo) const
-{
-	std::vector<size_t> jac;
-
-	jac.push_back(0);
-	jac.push_back(1);
-	while (jac.back() < upTo)
-		jac.push_back(jac[jac.size() - 1] + 2 * jac[jac.size() - 2]);
-	return jac;
+PmergeMe::~PmergeMe(void) {
+	std::cout << "\033[90mDestructor for PmergeMe\033[0m" << std::endl;
+	return ;
 }
 
-/* ------------------------------------------------------------------ */
-/*  std::vector implementation                                        */
-/* ------------------------------------------------------------------ */
 
-void PmergeMe::binaryInsertVector(const std::vector<int> &values, std::vector<size_t> &chain, size_t idx, size_t bound) const
+/* ------------ TEMPLATE ---------------- */
+
+
+template <typename T>
+void PmergeMe::display(const T& container)
 {
-	std::vector<size_t>::iterator lo = chain.begin();
-	std::vector<size_t>::iterator hi = chain.begin() + bound;
-
-	while (lo < hi)
-	{
-		std::vector<size_t>::iterator mid = lo + (hi - lo) / 2;
-		if (values[*mid] < values[idx])
-			lo = mid + 1;
-		else
-			hi = mid;
-	}
-	chain.insert(lo, idx);
+	typename T::const_iterator it;
+	for (it = container.begin(); it != container.end(); ++it)
+		std::cout << *it << " ";
+	std::cout << std::endl;
 }
 
-std::vector<size_t> PmergeMe::mergeInsertSortVector(const std::vector<int> &values, std::vector<size_t> idx) const
-{
-	size_t n = idx.size();
+template<typename T>
+void PmergeMe::merge(std::list<T>& left, std::list<T>& right, std::list<T>& result) {
+	typename std::list<T>::iterator left_it = left.begin();
+	typename std::list<T>::iterator right_it = right.begin();
 
-	if (n <= 1)
-		return idx;
-
-	bool hasStraggler = (n % 2 == 1);
-	size_t straggler = 0;
-	if (hasStraggler)
-	{
-		straggler = idx.back();
-		idx.pop_back();
-		--n;
-	}
-
-	std::vector<size_t> smallerIdx(n / 2);
-	std::vector<size_t> largerIdx(n / 2);
-	for (size_t i = 0; i < n / 2; ++i)
-	{
-		size_t a = idx[2 * i];
-		size_t b = idx[2 * i + 1];
-		if (values[a] < values[b])
-		{
-			smallerIdx[i] = a;
-			largerIdx[i] = b;
-		}
-		else
-		{
-			smallerIdx[i] = b;
-			largerIdx[i] = a;
+	while (left_it != left.end() && right_it != right.end()) {
+		if (*left_it < *right_it) {
+			result.push_back(*left_it);
+			++left_it;
+		} else {
+			result.push_back(*right_it);
+			++right_it;
 		}
 	}
 
-	std::vector<size_t> sortedLarger = mergeInsertSortVector(values, largerIdx);
+	result.insert(result.end(), left_it, left.end());
+	result.insert(result.end(), right_it, right.end());
+}
 
-	std::map<size_t, size_t> partner;
-	for (size_t i = 0; i < largerIdx.size(); ++i)
-		partner[largerIdx[i]] = smallerIdx[i];
+template<typename T>
+void PmergeMe::mergeInsertionSort(std::list<T>& arr) {
+	std::list<std::list<T> > lists;
+	typename std::list<T>::iterator it;
 
-	std::vector<size_t> chain = sortedLarger;
-	chain.insert(chain.begin(), partner[sortedLarger[0]]);
+	for (it = arr.begin(); it != arr.end(); ++it) {
+		std::list<T> singleton;
+		singleton.push_back(*it);
+		lists.push_back(singleton);
 
-	size_t m = sortedLarger.size();
-	size_t placed = 1;
-	std::vector<size_t> jac = jacobsthalSequence(m);
+		while (lists.size() >= 2) {
+			std::list<T> first = lists.front();
+			lists.pop_front();
+			std::list<T> second = lists.front();
+			lists.pop_front();
 
-	for (size_t t = 3; placed < m; ++t)
-	{
-		if (t >= jac.size())
-			break;
-		size_t lo = jac[t - 1];
-		if (lo >= m)
-			break;
-		size_t hi = jac[t];
-		if (hi > m)
-			hi = m;
-		for (size_t rank = hi; rank > lo; --rank)
-		{
-			size_t largeIdx = sortedLarger[rank - 1];
-			size_t pendIdx = partner[largeIdx];
-			std::vector<size_t>::iterator boundIt = std::find(chain.begin(), chain.end(), largeIdx);
-			binaryInsertVector(values, chain, pendIdx, static_cast<size_t>(boundIt - chain.begin()));
-			++placed;
+			std::list<T> merged;
+			merge(first, second, merged);
+			lists.push_back(merged);
 		}
 	}
 
-	if (hasStraggler)
-		binaryInsertVector(values, chain, straggler, chain.size());
-
-	return chain;
+	if (!lists.empty())
+		arr = lists.front();
 }
 
-std::vector<int> PmergeMe::sortVector(const std::vector<int> &input) const
-{
-	std::vector<size_t> idx(input.size());
-	for (size_t i = 0; i < input.size(); ++i)
-		idx[i] = i;
 
-	std::vector<size_t> sortedIdx = mergeInsertSortVector(input, idx);
+/* ------------ FUNCTIONS --------------- */
 
-	std::vector<int> result(input.size());
-	for (size_t i = 0; i < sortedIdx.size(); ++i)
-		result[i] = input[sortedIdx[i]];
-	return result;
+
+void PmergeMe::mergeInsertSortDeque(std::deque<int>& arr) {
+	std::list<int> tempList(arr.begin(), arr.end());
+	mergeInsertionSort(tempList);
+	arr.assign(tempList.begin(), tempList.end());
 }
 
-/* ------------------------------------------------------------------ */
-/*  std::deque implementation                                         */
-/* ------------------------------------------------------------------ */
-
-void PmergeMe::binaryInsertDeque(const std::deque<int> &values, std::deque<size_t> &chain, size_t idx, size_t bound) const
-{
-	std::deque<size_t>::iterator lo = chain.begin();
-	std::deque<size_t>::iterator hi = chain.begin() + bound;
-
-	while (lo < hi)
-	{
-		std::deque<size_t>::iterator mid = lo + (hi - lo) / 2;
-		if (values[*mid] < values[idx])
-			lo = mid + 1;
-		else
-			hi = mid;
-	}
-	chain.insert(lo, idx);
-}
-
-std::deque<size_t> PmergeMe::mergeInsertSortDeque(const std::deque<int> &values, std::deque<size_t> idx) const
-{
-	size_t n = idx.size();
-
-	if (n <= 1)
-		return idx;
-
-	bool hasStraggler = (n % 2 == 1);
-	size_t straggler = 0;
-	if (hasStraggler)
-	{
-		straggler = idx.back();
-		idx.pop_back();
-		--n;
-	}
-
-	std::deque<size_t> smallerIdx(n / 2);
-	std::deque<size_t> largerIdx(n / 2);
-	for (size_t i = 0; i < n / 2; ++i)
-	{
-		size_t a = idx[2 * i];
-		size_t b = idx[2 * i + 1];
-		if (values[a] < values[b])
-		{
-			smallerIdx[i] = a;
-			largerIdx[i] = b;
-		}
-		else
-		{
-			smallerIdx[i] = b;
-			largerIdx[i] = a;
-		}
-	}
-
-	std::deque<size_t> sortedLarger = mergeInsertSortDeque(values, largerIdx);
-
-	std::map<size_t, size_t> partner;
-	for (size_t i = 0; i < largerIdx.size(); ++i)
-		partner[largerIdx[i]] = smallerIdx[i];
-
-	std::deque<size_t> chain = sortedLarger;
-	chain.insert(chain.begin(), partner[sortedLarger[0]]);
-
-	size_t m = sortedLarger.size();
-	size_t placed = 1;
-	std::vector<size_t> jac = jacobsthalSequence(m);
-
-	for (size_t t = 3; placed < m; ++t)
-	{
-		if (t >= jac.size())
-			break;
-		size_t lo = jac[t - 1];
-		if (lo >= m)
-			break;
-		size_t hi = jac[t];
-		if (hi > m)
-			hi = m;
-		for (size_t rank = hi; rank > lo; --rank)
-		{
-			size_t largeIdx = sortedLarger[rank - 1];
-			size_t pendIdx = partner[largeIdx];
-			std::deque<size_t>::iterator boundIt = std::find(chain.begin(), chain.end(), largeIdx);
-			binaryInsertDeque(values, chain, pendIdx, static_cast<size_t>(boundIt - chain.begin()));
-			++placed;
-		}
-	}
-
-	if (hasStraggler)
-		binaryInsertDeque(values, chain, straggler, chain.size());
-
-	return chain;
-}
-
-std::deque<int> PmergeMe::sortDeque(const std::deque<int> &input) const
-{
-	std::deque<size_t> idx(input.size());
-	for (size_t i = 0; i < input.size(); ++i)
-		idx[i] = i;
-
-	std::deque<size_t> sortedIdx = mergeInsertSortDeque(input, idx);
-
-	std::deque<int> result(input.size());
-	for (size_t i = 0; i < sortedIdx.size(); ++i)
-		result[i] = input[sortedIdx[i]];
-	return result;
+void PmergeMe::mergeInsertSortList(std::list<int>& arr) {
+	mergeInsertionSort(arr);
 }

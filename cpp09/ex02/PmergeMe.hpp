@@ -1,29 +1,37 @@
 #ifndef PMERGEME_HPP
 #define PMERGEME_HPP
 
-#include <vector>
+#include <iostream>
 #include <deque>
-#include <cstddef>
+#include <list>
+#include <algorithm>
+#include <ctime>
+#include <cstdlib>
 
 class PmergeMe
 {
-public:
-	PmergeMe();
-	PmergeMe(const PmergeMe &other);
-	PmergeMe &operator=(const PmergeMe &other);
-	~PmergeMe();
+	public :
 
-	std::vector<int> sortVector(const std::vector<int> &input) const;
-	std::deque<int>  sortDeque(const std::deque<int> &input) const;
+		PmergeMe(int argc, char **argv);
+		PmergeMe(PmergeMe const &src);
+		~PmergeMe(void);
+		PmergeMe &operator=(PmergeMe const &src);
 
-private:
-	std::vector<size_t> mergeInsertSortVector(const std::vector<int> &values, std::vector<size_t> idx) const;
-	void binaryInsertVector(const std::vector<int> &values, std::vector<size_t> &chain, size_t idx, size_t bound) const;
+		template <typename T>
+		void display(const T& container);
 
-	std::deque<size_t> mergeInsertSortDeque(const std::deque<int> &values, std::deque<size_t> idx) const;
-	void binaryInsertDeque(const std::deque<int> &values, std::deque<size_t> &chain, size_t idx, size_t bound) const;
+		void mergeInsertSortDeque(std::deque<int>& arr);
+		void mergeInsertSortList(std::list<int>& arr);
 
-	std::vector<size_t> jacobsthalSequence(size_t upTo) const;
+	private :
+
+		template<typename T>
+		void merge(std::list<T>& left, std::list<T>& right, std::list<T>& result);
+
+		template<typename T>
+		void mergeInsertionSort(std::list<T>& arr);
+
+		PmergeMe(void);
 };
 
 #endif
