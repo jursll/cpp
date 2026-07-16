@@ -15,7 +15,6 @@ PmergeMe::PmergeMe(int argc, char **argv)
 	std::deque<int> inputDeque;
 	std::list<int> inputList;
 
-	srand(time(NULL));
 	for (int i = 1; i < argc; ++i)
 	{
 		int value = atoi(argv[i]);
@@ -33,12 +32,12 @@ PmergeMe::PmergeMe(int argc, char **argv)
 	clock_t start1 = clock();
 	mergeInsertSortDeque(inputDeque);
 	clock_t end1 = clock();
-	double time1 = static_cast<double>(end1 - start1) / CLOCKS_PER_SEC * 1000;
+	double time1 = static_cast<double>(end1 - start1) / CLOCKS_PER_SEC * 1000000;
 
 	clock_t start2 = clock();
 	mergeInsertSortList(inputList);
 	clock_t end2 = clock();
-	double time2 = static_cast<double>(end2 - start2) / CLOCKS_PER_SEC * 1000;
+	double time2 = static_cast<double>(end2 - start2) / CLOCKS_PER_SEC * 1000000;
 
 	std::cout << "After: ";
 	display(inputDeque);
@@ -79,61 +78,104 @@ void PmergeMe::display(const T& container)
 	std::cout << std::endl;
 }
 
-template<typename T>
-void PmergeMe::merge(std::list<T>& left, std::list<T>& right, std::list<T>& result) {
-	typename std::list<T>::iterator left_it = left.begin();
-	typename std::list<T>::iterator right_it = right.begin();
-
-	while (left_it != left.end() && right_it != right.end()) {
-		if (*left_it < *right_it) {
-			result.push_back(*left_it);
-			++left_it;
-		} else {
-			result.push_back(*right_it);
-			++right_it;
-		}
-	}
-
-	result.insert(result.end(), left_it, left.end());
-	result.insert(result.end(), right_it, right.end());
+template <typename PairT>
+typename PairT::iterator PmergeMe::findByTag(PairT& chain, size_t tag)
+{
+	typename PairT::iterator it = chain.begin();
+	while (it != chain.end() && it->second != tag)
+		++it;
+	return it;
 }
 
-template<typename T>
-void PmergeMe::mergeInsertionSort(std::list<T>& arr) {
-	std::list<std::list<T> > lists;
-	typename std::list<T>::iterator it;
+template <typename PairT>
+void PmergeMe::fordJohnsonSort(PairT& items)
+{
+	if (items.size() <= 1)
+		return;
 
-	for (it = arr.begin(); it != arr.end(); ++it) {
-		std::list<T> singleton;
-		singleton.push_back(*it);
-		lists.push_back(singleton);
+	PairT winners;
+	std::vector<std::pair<int, size_t> > companions;
+	std::vector<size_t> partnerTag;
+	bool hasStraggler = false;
+	std::pair<int, size_t> straggler(0, 0);
 
-		while (lists.size() >= 2) {
-			std::list<T> first = lists.front();
-			lists.pop_front();
-			std::list<T> second = lists.front();
-			lists.pop_front();
-
-			std::list<T> merged;
-			merge(first, second, merged);
-			lists.push_back(merged);
+	typename PairT::iterator it = items.begin();
+	while (it != items.end())
+	{
+		std::pair<int, size_t> x = *it++;
+		if (it == items.end())
+		{
+			straggler = x;
+			hasStraggler = true;
+			break;
 		}
+		std::pair<int, size_t> y = *it++;
+		if (x.first < y.first)
+		{
+			winners.push_back(y);
+			companions.push_back(x);
+		}
+		else
+		{
+			winners.push_back(x);
+			companions.push_back(y);
+		}
+		partnerTag.push_back(winners.back().second);
 	}
 
-	if (!lists.empty())
-		arr = lists.front();
+	fordJohnsonSort(winners);
+
+	PairT& chain = winners;
+
+	for (size_t i = 0; i < companions.size(); ++i)
+	{
+		typename PairT::iterator bound = findByTag(chain, partnerTag[i]);
+		typename PairT::iterator pos = std::lower_bound(chain.begin(), bound, companions[i], byValue);
+		chain.insert(pos, companions[i]);
+	}
+
+	if (hasStraggler)
+	{
+		typename PairT::iterator pos = std::lower_bound(chain.begin(), chain.end(), straggler, byValue);
+		chain.insert(pos, straggler);
+	}
+
+	items.swap(chain);
 }
 
 
 /* ------------ FUNCTIONS --------------- */
 
 
-void PmergeMe::mergeInsertSortDeque(std::deque<int>& arr) {
-	std::list<int> tempList(arr.begin(), arr.end());
-	mergeInsertionSort(tempList);
-	arr.assign(tempList.begin(), tempList.end());
+bool PmergeMe::byValue(const std::pair<int, size_t>& a, const std::pair<int, size_t>& b)
+{
+	return a.first < b.first;
 }
 
-void PmergeMe::mergeInsertSortList(std::list<int>& arr) {
-	mergeInsertionSort(arr);
+void PmergeMe::mergeInsertSortDeque(std::deque<int>& arr)
+{
+	std::deque<std::pair<int, size_t> > tagged;
+	size_t tag = 0;
+	for (std::deque<int>::iterator it = arr.begin(); it != arr.end(); ++it)
+		tagged.push_back(std::make_pair(*it, tag++));
+
+	fordJohnsonSort(tagged);
+
+	arr.clear();
+	for (std::deque<std::pair<int, size_t> >::iterator it = tagged.begin(); it != tagged.end(); ++it)
+		arr.push_back(it->first);
+}
+
+void PmergeMe::mergeInsertSortList(std::list<int>& arr)
+{
+	std::list<std::pair<int, size_t> > tagged;
+	size_t tag = 0;
+	for (std::list<int>::iterator it = arr.begin(); it != arr.end(); ++it)
+		tagged.push_back(std::make_pair(*it, tag++));
+
+	fordJohnsonSort(tagged);
+
+	arr.clear();
+	for (std::list<std::pair<int, size_t> >::iterator it = tagged.begin(); it != tagged.end(); ++it)
+		arr.push_back(it->first);
 }

@@ -4,7 +4,10 @@
 #include <iostream>
 #include <deque>
 #include <list>
+#include <vector>
+#include <utility>
 #include <algorithm>
+#include <cstddef>
 #include <ctime>
 #include <cstdlib>
 
@@ -25,11 +28,13 @@ class PmergeMe
 
 	private :
 
-		template<typename T>
-		void merge(std::list<T>& left, std::list<T>& right, std::list<T>& result);
+		static bool byValue(const std::pair<int, size_t>& a, const std::pair<int, size_t>& b);
 
-		template<typename T>
-		void mergeInsertionSort(std::list<T>& arr);
+		template <typename PairT>
+		typename PairT::iterator findByTag(PairT& chain, size_t tag);
+
+		template <typename PairT>
+		void fordJohnsonSort(PairT& items);
 
 		PmergeMe(void);
 };
