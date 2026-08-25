@@ -47,10 +47,20 @@ bool BitcoinExchange::isValidDate(const std::string& date) const {
 			return false;
 	}
 
+	int year = std::atoi(date.substr(0, 4).c_str());
 	int month = std::atoi(date.substr(5, 2).c_str());
 	int day = std::atoi(date.substr(8, 2).c_str());
 
-	return month >= 1 && month <= 12 && day >= 1 && day <= 31;
+	if (month < 1 || month > 12 || day < 1)
+		return false;
+
+	static const int daysPerMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	int maxDay = daysPerMonth[month - 1];
+	bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+	if (month == 2 && isLeapYear)
+		maxDay = 29;
+
+	return day <= maxDay;
 }
 
 void BitcoinExchange::processInput(const std::string& filename) {
