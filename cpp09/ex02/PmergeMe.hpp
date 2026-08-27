@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <map>
 #include <cstddef>
 #include <ctime>
 #include <cstdlib>
@@ -29,6 +30,8 @@ class PmergeMe
 	private :
 
 		static bool byValue(const std::pair<int, size_t>& a, const std::pair<int, size_t>& b);
+
+		static std::vector<size_t> jacobsthalOrder(size_t count);
 
 		template <typename PairT>
 		typename PairT::iterator findByTag(PairT& chain, size_t tag);

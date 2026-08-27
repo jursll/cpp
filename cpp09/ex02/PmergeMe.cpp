@@ -127,8 +127,23 @@ void PmergeMe::fordJohnsonSort(PairT& items)
 
 	PairT& chain = winners;
 
-	for (size_t i = 0; i < companions.size(); ++i)
+	// Rank (0-based position in the freshly-sorted chain) -> which companion it owns.
+	// Built via tag lookups only (map on size_t), never by comparing two T values.
+	std::vector<size_t> rankToCompanionIndex(companions.size());
 	{
+		std::map<size_t, size_t> tagToCompanionIndex;
+		for (size_t i = 0; i < partnerTag.size(); ++i)
+			tagToCompanionIndex[partnerTag[i]] = i;
+
+		size_t rank = 0;
+		for (typename PairT::iterator cit = chain.begin(); cit != chain.end(); ++cit, ++rank)
+			rankToCompanionIndex[rank] = tagToCompanionIndex[cit->second];
+	}
+
+	std::vector<size_t> order = jacobsthalOrder(companions.size());
+	for (size_t idx = 0; idx < order.size(); ++idx)
+	{
+		size_t i = rankToCompanionIndex[order[idx]];
 		typename PairT::iterator bound = findByTag(chain, partnerTag[i]);
 		typename PairT::iterator pos = std::lower_bound(chain.begin(), bound, companions[i], byValue);
 		chain.insert(pos, companions[i]);
@@ -150,6 +165,36 @@ void PmergeMe::fordJohnsonSort(PairT& items)
 bool PmergeMe::byValue(const std::pair<int, size_t>& a, const std::pair<int, size_t>& b)
 {
 	return a.first < b.first;
+}
+
+std::vector<size_t> PmergeMe::jacobsthalOrder(size_t count)
+{
+	std::vector<size_t> order;
+	if (count == 0)
+		return order;
+
+	order.push_back(0);
+	size_t previous = 1;
+	size_t current = 3;
+	while (previous < count)
+	{
+		size_t groupStart = previous + 1;
+		size_t groupEnd = current;
+		if (groupEnd > count)
+			groupEnd = count;
+
+		for (size_t idx = groupEnd; ; --idx)
+		{
+			order.push_back(idx - 1);
+			if (idx == groupStart)
+				break;
+		}
+
+		size_t next = current + 2 * previous;
+		previous = current;
+		current = next;
+	}
+	return order;
 }
 
 void PmergeMe::mergeInsertSortDeque(std::deque<int>& arr)
